@@ -164,8 +164,8 @@ int flash_write(uint32_t write_addr, uint32_t num){
 //     id_indicator_led = true;
 // }
 ~~~
-
-
+  
+  
 mbed_app.json
 ~~~.json
 {
