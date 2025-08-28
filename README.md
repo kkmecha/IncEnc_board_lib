@@ -8,27 +8,34 @@ CANデータの受け取り処理はmain関数内でしてください。この�
 main.cpp
 ~~~main.cpp
 #include "mbed.h"
+#include "IncEnc_board.h"
 
 BufferedSerial pc(USBTX, USBRX, 9600);
 CAN can(PD_0, PD_1, 1000000);
-CANMessage msg;
+CANMessage tx_msg, rx_msg;
+IncEnc_board encoder(1);
 
-int64_t angle;
+int64_t angles[1] = {0};
 
 int main(){
-    can.frequency(1000000);
-    can.reset();
     while(true){
-        if(can.read(msg)){
-            angle = 0;
-            for(int i = 0; i < 8; i++){
-                // printf("%d ", msg.data[i]);
-                angle |= ((int64_t)msg.data[i] << (8 * (7 - i)));
+        if(can.read(rx_msg))
+            encoder.conv_data_all(rx_msg, angles);
+        printf("angle: %lld, tderror: %d, rderror: %d\r\n", angles[0], can.tderror(), can.rderror());
+
+        if(pc.readable()){
+            char key = 0;
+            pc.read(&key, 1);
+            switch(key){
+                case 'r': 
+                    printf("Sending reset command to node 1...\r\n");
+                    encoder.encoder_calib_all(tx_msg);
+                    can.write(tx_msg);
+                    break;
             }
-            // printf("\n");
         }
-        printf("id: 0x%x, angle: %lld, tderr: %d, rderr: %d\r\n", msg.id, angle, can.tderror(), can.rderror());
-        ThisThread::sleep_for(10ms);
+
+        ThisThread::sleep_for(1ms);
     }
 }
 
