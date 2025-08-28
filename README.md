@@ -2,10 +2,8 @@
 AMT102-CAN変換基盤からのデータを処理するライブラリです  
 CANデータの受け取り処理はmain関数内でしてください。このメンバ関数でデータ変換ができます。
 
-
 #include "mbed.h"
 #include "RotaryEncoder.h"
-#include "NoMutexCAN.h"
 #include <chrono>
 #include <cstdint>
 
@@ -23,12 +21,11 @@ int64_t stored_angle = *((int64_t*)ANGLE_PAGE_ADDRESS);
 DigitalOut can_led(PA_0);
 DigitalOut id_indicator_led(PA_1);
 DigitalOut angle_change_led(PA_2);
-InterruptIn id_set_button(PA_8, PullDown);
+InterruptIn id_set_button(PA_8, PullDown); // DigitalIn
 STM32_encoder encoder(PA_6, PA_7); 
 // BufferedSerial pc(USBTX, USBRX, 9600);
 BufferedSerial debug_uart(PA_9, PA_10, 9600);
-// CAN can(PA_11, PA_12, 1000000);
-NoMutexCAN can(PA_11, PA_12, 1000000);
+CAN can(PA_11, PA_12, 1000000);
 CANMessage send_msg, receive_msg;
 
 Timer id_set_timer, can_check_timer;
@@ -48,10 +45,11 @@ void check_can_bus_status();
 int main(){
     // printf("main function start\r\n"):
     can.reset();
+    id_set_timer.start();
+    can_check_timer.start();
     id_set_button.rise(id_set_isr);
     encoder.start();
     encoder.reset();
-    can_check_timer.start();
     
     blink_handler();
 
@@ -92,11 +90,11 @@ int main(){
         }     
         can.write(send_msg);
 
-        printf("%2d, %lld\r\n", stored_id, angle);
-        printf("\r\n%d, %d, ", stored_id, tderr_cnt);
-        for(int i = 0; i < 8; i++) printf("%03d ", send_msg.data[i]);
+        // printf("%2d, %lld\r\n", stored_id, angle);
+        // printf("\r\n%d, %d, ", stored_id, tderr_cnt);
+        // for(int i = 0; i < 8; i++) printf("%03d ", send_msg.data[i]);
         
-        ThisThread::sleep_for(10ms);
+        ThisThread::sleep_for(1ms);
     }
 }
 
@@ -105,7 +103,6 @@ void id_set_isr(){
         // 最初のプレスでID設定モードを開始
         is_id_set_mode = true;
         new_id_counter = 1;
-        id_set_timer.start();
         id_set_timer.reset();
         blink_event.detach();
     } else {
