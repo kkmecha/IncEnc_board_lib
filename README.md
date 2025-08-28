@@ -5,6 +5,8 @@ CANデータの受け取り処理はmain関数内でしてください。この�
 
 以下は変換基盤に書き込んでいるプログラムです。  
 不具合があった際の参考にしてください  
+  
+main.cpp  
 ~~~main.cpp
 #include "mbed.h"
 #include "RotaryEncoder.h"
@@ -161,4 +163,16 @@ int flash_write(uint32_t write_addr, uint32_t num){
 // void handler(){
 //     id_indicator_led = true;
 // }
+~~~
+
+
+mbed_app.json
+~~~.json
+{
+    "target_overrides": {
+        "NUCLEO-F446RE": {
+            "target.clock_source": "HSI"
+        }
+    }
+}
 ~~~
