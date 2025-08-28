@@ -16,13 +16,14 @@ void IncEnc_board::encoder_calib_all(CAN &can, CANMessage &msg){
 
 void IncEnc_board::conv_data_node(CANMessage &msg, int64_t *angle, uint8_t node){
     if(msg.id == 0x400 + node){
-        for(int id = 1; id =< _all_node_num; id++){
-            *angle |= ((int64_t)msg.data[id] >> (8 * (7 - id)));
+        for(int i = 0; i < 8; i++){
+            *angle |= ((int64_t)msg.data[i] >> (8 * (7 - i)));
         }
     }
 }
 
 void IncEnc_board::conv_data_all(CANMessage &msg, int64_t *angles){
-    for(int node = 0; node < _all_node_num; node++) this->conv_data_node(msg, angles, node);
+    for(int node = 1; node <= _all_node_num; node++) this->conv_data_node(msg, angles, node);
 }
+
 
