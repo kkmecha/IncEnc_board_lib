@@ -1,12 +1,44 @@
 # IncEnc_board_lib  
 AMT102-CAN変換基盤からのデータを処理するライブラリです  
 CANデータの受け取り処理はmain関数内でしてください。このメンバ関数でデータ変換ができます。
+  
+  
+サンプルコード  
+  
+main.cpp
+~~~main.cpp
+#include "mbed.h"
 
+BufferedSerial pc(USBTX, USBRX, 9600);
+CAN can(PD_0, PD_1, 1000000);
+CANMessage msg;
 
+int64_t angle;
+
+int main(){
+    can.frequency(1000000);
+    can.reset();
+    while(true){
+        if(can.read(msg)){
+            angle = 0;
+            for(int i = 0; i < 8; i++){
+                // printf("%d ", msg.data[i]);
+                angle |= ((int64_t)msg.data[i] << (8 * (7 - i)));
+            }
+            // printf("\n");
+        }
+        printf("id: 0x%x, angle: %lld, tderr: %d, rderr: %d\r\n", msg.id, angle, can.tderror(), can.rderror());
+        ThisThread::sleep_for(10ms);
+    }
+}
+
+~~~  
+  
+  
 以下は変換基盤に書き込んでいるプログラムです。  
 不具合があった際の参考にしてください  
   
-main.cpp  
+main.cpp(embedded)  
 ~~~main.cpp
 #include "mbed.h"
 #include "RotaryEncoder.h"
@@ -165,8 +197,10 @@ int flash_write(uint32_t write_addr, uint32_t num){
 // }
 ~~~
   
+内部クロックの使用を明示することも忘れないでください  
+このファイルはmain.cppと同じ階層に配置しておくだけでいいです  
   
-mbed_app.json
+mbed_app.json  
 ~~~.json
 {
     "target_overrides": {
