@@ -85,10 +85,9 @@ int64_t angle, tmp = 0;
 void id_set_isr();
 void blink_handler();
 int flash_write(uint32_t write_addr, uint32_t num);
-void check_can_bus_status();
 
 int main(){
-    // printf("main function start\r\n"):
+    // printf("main function start\r\n");
     can.reset();
     id_set_timer.start();
     can_check_timer.start();
@@ -102,6 +101,7 @@ int main(){
 
     while(true){
         angle = encoder.get_angle();
+        // CANMessage send_msg(0x400 + stored_id, (const char*)&angle, sizeof(angle));
 
         if(can.read(receive_msg)){
             if (receive_msg.id == (0x400 + stored_id) && receive_msg.data[0] == 0xff) {
@@ -139,7 +139,7 @@ int main(){
         // printf("\r\n%d, %d, ", stored_id, tderr_cnt);
         // for(int i = 0; i < 8; i++) printf("%03d ", send_msg.data[i]);
         
-        ThisThread::sleep_for(1ms);
+        ThisThread::sleep_for(10ms); // 100Hz/, 100Hz
     }
 }
 
