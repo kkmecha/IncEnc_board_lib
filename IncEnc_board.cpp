@@ -1,6 +1,6 @@
 #include "IncEnc_board.h"
 
-IncEnc_board::IncEnc_board(int all_node_num,CAN &can) : _all_node_num(all_node_num),_can(can){}
+IncEnc_board::IncEnc_board(CAN &can, int all_node_num) : _can(can), _all_node_num(all_node_num){}
 
 void IncEnc_board::encoder_calib_node(CANMessage &msg, int node){
     msg.id = 0x400 + node;
