@@ -10,35 +10,31 @@ main.cpp
 #include "mbed.h"
 #include "IncEnc_board.h"
 
-BufferedSerial pc(USBTX, USBRX, 9600);
 CAN can(PD_0, PD_1, 1000000);
-CANMessage tx_msg, rx_msg;
-IncEnc_board encoder(1);
+UnbufferedSerial pc(USBTX, USBRX, 9600);
+IncEnc_board encoder(can, 1);
 
-int64_t angles[1] = {0};
-
-int main(){
-    while(true){
-        if(can.read(rx_msg))
-            encoder.conv_data_all(rx_msg, angles);
-        printf("angle: %lld, tderror: %d, rderror: %d\r\n", angles[0], can.tderror(), can.rderror());
-
+int main() {
+    encoder.encoder_reset_all();
+    while(true) {
+        int64_t received_angle;
+        encoder.conv_data_all(&received_angle);
+        
         if(pc.readable()){
             char key = 0;
             pc.read(&key, 1);
             switch(key){
                 case 'r': 
                     printf("Sending reset command to node 1...\r\n");
-                    encoder.encoder_calib_all(tx_msg);
-                    can.write(tx_msg);
+                    encoder.encoder_reset_all();
                     break;
             }
         }
-
+        printf("Received data: %lld\r\n", received_angle);
+        
         ThisThread::sleep_for(1ms);
     }
 }
-
 ~~~  
   
   
