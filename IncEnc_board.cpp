@@ -2,29 +2,33 @@
 
 IncEnc_board::IncEnc_board(CAN &can, int all_node_num) : _can(can), _all_node_num(all_node_num){}
 
-void IncEnc_board::encoder_calib_node(CANMessage &msg, int node){
-    msg.id = 0x400 + node;
+void IncEnc_board::encoder_calib_node(int node){
+    CANMessage msg;
+    msg.id   = 0x400 + node;
+    msg.len  = 1;
     msg.data[0] = 0xff;
     _can.write(msg);
 }
 
-void IncEnc_board::encoder_calib_all(CANMessage &msg){
+void IncEnc_board::encoder_calib_all(){
     for(int id = 1; id <= _all_node_num; id++){
-        this->encoder_calib_node(msg, id);
+        this->encoder_calib_node(id);
     }
 }
 
-void IncEnc_board::conv_data_node(CANMessage &msg, int64_t *angle, uint8_t node){
+void IncEnc_board::conv_data_node(int64_t *angle, uint8_t node){
+    CANMessage msg;
+    _can.read(msg);
+    const int index = node - 1;
     if(msg.id == 0x400+node){
-            angle[node]=0;
-            for (int i = 0; i < 8; i++) {
-                angle[node] |= (int64_t)msg.data[i] << (8 * (7 - i));
-            }
+        angle[index] = 0;
+        for (int i = 0; i < 8; i++) {
+            angle[index] |= (int64_t)msg.data[i] << (8 * (7 - i));
+        }
     }
 }
 
-void IncEnc_board::conv_data_all(CANMessage &msg, int64_t *angles){
-    for(int node = 0; node < _all_node_num; node++) this->conv_data_node(msg, angles, node);
+void IncEnc_board::conv_data_all(int64_t *angles){
+    for(int node = 1; node <= _all_node_num; node++) this->conv_data_node(angles, node);
 }
-
 

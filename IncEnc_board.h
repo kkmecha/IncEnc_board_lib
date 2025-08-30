@@ -5,13 +5,12 @@
 class IncEnc_board {
 public:
     IncEnc_board(CAN &can, int all_node_num);
-    void encoder_calib_node(CANMessage &msg, int node);
-    void encoder_calib_all(CANMessage &msg);
-    void conv_data_node(CANMessage &msg, int64_t* angle, uint8_t node);
-    void conv_data_all(CANMessage &msg, int64_t* angles);
+    void encoder_calib_node(int node);
+    void encoder_calib_all();
+    void conv_data_node(int64_t* angle, uint8_t node);
+    void conv_data_all(int64_t* angles);
 
 private:
     int _all_node_num;
     CAN &_can;
 };
-
