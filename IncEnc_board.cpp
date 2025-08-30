@@ -2,7 +2,7 @@
 
 IncEnc_board::IncEnc_board(CAN &can, int all_node_num) : _can(can), _all_node_num(all_node_num){}
 
-void IncEnc_board::encoder_calib_node(int node){
+void IncEnc_board::encoder_reset_node(int node){
     CANMessage msg;
     msg.id   = 0x400 + node;
     msg.len  = 1;
@@ -10,9 +10,9 @@ void IncEnc_board::encoder_calib_node(int node){
     _can.write(msg);
 }
 
-void IncEnc_board::encoder_calib_all(){
+void IncEnc_board::encoder_reset_all(){
     for(int id = 1; id <= _all_node_num; id++){
-        this->encoder_calib_node(id);
+        this->encoder_reset_node(id);
     }
 }
 
