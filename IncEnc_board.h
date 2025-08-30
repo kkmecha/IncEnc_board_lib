@@ -4,7 +4,7 @@
 
 class IncEnc_board {
 public:
-    IncEnc_board(int all_node_num,CAN &can);
+    IncEnc_board(CAN &can, int all_node_num);
     void encoder_calib_node(CANMessage &msg, int node);
     void encoder_calib_all(CANMessage &msg);
     void conv_data_node(CANMessage &msg, int64_t* angle, uint8_t node);
