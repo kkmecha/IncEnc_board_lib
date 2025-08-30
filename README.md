@@ -43,7 +43,7 @@ int main() {
   
 main.cpp(embedded)  
 ~~~main.cpp
-// 割り込みで送信したほうがいいのかな
+// タイマ割り込みでの送信も検討
 
 #include "mbed.h"
 #include "RotaryEncoder.h"
