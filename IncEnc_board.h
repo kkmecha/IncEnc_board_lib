@@ -14,3 +14,4 @@ private:
     int _all_node_num;
     CAN &_can;
 };
+
