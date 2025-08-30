@@ -15,7 +15,7 @@ void IncEnc_board::encoder_calib_all(CANMessage &msg){
 }
 
 void IncEnc_board::conv_data_node(CANMessage &msg, int64_t *angle, uint8_t node){
-    if(msg.id == 0x401+node){
+    if(msg.id == 0x400+node){
             angle[node]=0;
             for (int i = 0; i < 8; i++) {
                 angle[node] |= (int64_t)msg.data[i] << (8 * (7 - i));
@@ -26,4 +26,5 @@ void IncEnc_board::conv_data_node(CANMessage &msg, int64_t *angle, uint8_t node)
 void IncEnc_board::conv_data_all(CANMessage &msg, int64_t *angles){
     for(int node = 0; node < _all_node_num; node++) this->conv_data_node(msg, angles, node);
 }
+
 
