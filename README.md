@@ -47,6 +47,8 @@ int main(){
   
 main.cpp(embedded)  
 ~~~main.cpp
+// 割り込みで送信したほうがいいのかな
+
 #include "mbed.h"
 #include "RotaryEncoder.h"
 #include <chrono>
@@ -139,7 +141,7 @@ int main(){
         // printf("\r\n%d, %d, ", stored_id, tderr_cnt);
         // for(int i = 0; i < 8; i++) printf("%03d ", send_msg.data[i]);
         
-        ThisThread::sleep_for(10ms); // 100Hz/, 100Hz
+        ThisThread::sleep_for(10ms); // 1000Hz bad, 100Hz ok
     }
 }
 
