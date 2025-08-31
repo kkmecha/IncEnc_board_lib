@@ -17,7 +17,7 @@ bool IncEnc_board::encoder_reset_all(){
     bool result = false;
     for(int id = 1; id <= _all_node_num; id++){
         this->encoder_reset_node(id);
-        ThisThread::sleep_for(10ms);
+        ThisThread::sleep_for(10ms); // 適宜変更をお願いします
     }
     return true;
 }
@@ -37,4 +37,5 @@ void IncEnc_board::conv_data_node(int64_t *angle, uint8_t node){
 void IncEnc_board::conv_data_all(int64_t *angles){
     for(int node = 1; node <= _all_node_num; node++) this->conv_data_node(angles, node);
 }
+
 
